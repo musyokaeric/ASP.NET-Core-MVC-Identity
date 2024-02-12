@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using IdentityManager.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityManager.Data
@@ -8,5 +9,7 @@ namespace IdentityManager.Data
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
+
+        public DbSet<ApplicationUser> ApplicationUser { get; set; } // Adds new column to AspNetUsers table
     }
 }
