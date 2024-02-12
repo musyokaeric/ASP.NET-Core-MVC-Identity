@@ -7,10 +7,10 @@ namespace IdentityManager.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> signInManager;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -41,9 +41,17 @@ namespace IdentityManager.Controllers
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
+
+                AddErrors(result);
             }
 
             return View(model);
+        }
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
         }
     }
 }
