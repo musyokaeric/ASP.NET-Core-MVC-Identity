@@ -15,6 +15,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>(); // Links with our database connection
 
+
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    // Override Default Password Requirements
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
