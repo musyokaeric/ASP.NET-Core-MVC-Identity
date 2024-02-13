@@ -66,10 +66,14 @@ namespace IdentityManager.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     return LocalRedirect(returnUrl);
+                }
+                if (result.IsLockedOut)
+                {
+                    return View("Lockout");
                 }
                 else
                 {
@@ -87,6 +91,12 @@ namespace IdentityManager.Controllers
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult Lockout()
+        {
+            return View();
         }
 
         private void AddErrors(IdentityResult result)
