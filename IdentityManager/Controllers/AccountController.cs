@@ -1,7 +1,10 @@
 ﻿using IdentityManager.Models;
 using IdentityManager.Models.ViewModels;
+using IdentityManager.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
+using System.Net;
 
 namespace IdentityManager.Controllers
 {
@@ -9,11 +12,13 @@ namespace IdentityManager.Controllers
     {
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
+        private readonly IEmailService emailService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.emailService = emailService;
         }
 
         public IActionResult Register(string returnUrl = null)
@@ -106,9 +111,23 @@ namespace IdentityManager.Controllers
         }
 
         [HttpPost]
-        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            return View();
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Email does not exist");
+                return View();
+            }
+            else
+            {
+                await emailService.SendAsync("noreply@identity.com", "musyokaer@gmail.com",
+                    "Please confirm your email",
+                    $"Please click this link to reset yout password:");
+                return RedirectToAction("Login", "Account");
+            }
+            
         }
 
         private void AddErrors(IdentityResult result)
