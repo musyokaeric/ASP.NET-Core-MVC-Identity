@@ -122,12 +122,27 @@ namespace IdentityManager.Controllers
             }
             else
             {
-                await emailService.SendAsync("noreply@identity.com", "musyokaer@gmail.com",
-                    "Please confirm your email",
-                    $"Please click this link to reset yout password:");
-                return RedirectToAction("Login", "Account");
+                var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { user = user.Id, code }, protocol: HttpContext.Request.Scheme);
+
+                await emailService.SendAsync("musyokaer@gmail.com", "musyokaer@gmail.com",
+                    "Please reset - Identity Manager",
+                    $"Please click this link to reset yout password: <a href='{callbackUrl}'>Link</a>");
+                return RedirectToAction("ForgotPasswordConfirmation");
             }
             
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string code = null)
+        {
+            return code == null ? View("Error") : View();
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation(RegisterViewModel model)
+        {
+            return View();
         }
 
         private void AddErrors(IdentityResult result)

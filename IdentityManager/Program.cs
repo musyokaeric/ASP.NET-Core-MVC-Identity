@@ -15,7 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 // .NET Identity service
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>(); // Links with our database connection
+    .AddEntityFrameworkStores<ApplicationDbContext>() // Links with our database connection
+    .AddDefaultTokenProviders(); // Token generation
 
 
 builder.Services.Configure<IdentityOptions>(options =>
