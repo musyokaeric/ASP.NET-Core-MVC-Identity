@@ -201,6 +201,12 @@ namespace IdentityManager.Controllers
         }
 
         [HttpGet]
+        public IActionResult AuthenticatorConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> EnableAuthenticator()
         {
@@ -209,6 +215,30 @@ namespace IdentityManager.Controllers
             var token = await userManager.GetAuthenticatorKeyAsync(user);
             var model = new TwoFactorAuthenticationViewModel() { Token = token };
             return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EnableAuthenticator(TwoFactorAuthenticationViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.GetUserAsync(User);
+                var succeeded = await userManager.VerifyTwoFactorTokenAsync(user, userManager.Options.Tokens.AuthenticatorTokenProvider, model.Code);
+                if (succeeded)
+                {
+                    await userManager.SetTwoFactorEnabledAsync(user, true);
+                }
+                else
+                {
+                    ModelState.AddModelError("Verify", "Your two factor authentication code could not be validated.");
+                    return View(model);
+                }
+                return RedirectToAction(nameof(AuthenticatorConfirmation));
+            }
+
+            return View("Error");
         }
 
         private void AddErrors(IdentityResult result)
