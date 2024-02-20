@@ -139,8 +139,36 @@ namespace IdentityManager.Controllers
             return code == null ? View("Error") : View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Email does not exist");
+                    return View();
+                }
+                var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ResetPasswordConfirmation));
+                }
+                AddErrors(result);
+            }
+            return View();
+        }
+
         [HttpGet]
-        public IActionResult ForgotPasswordConfirmation(RegisterViewModel model)
+        public IActionResult ResetPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPasswordConfirmation()
         {
             return View();
         }
