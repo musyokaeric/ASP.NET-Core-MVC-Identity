@@ -29,7 +29,7 @@ namespace IdentityManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl)
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
             returnUrl = returnUrl ?? Url.Content("~/");
@@ -46,6 +46,12 @@ namespace IdentityManager.Controllers
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
+                    var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userid = user.Id, code }, protocol: HttpContext.Request.Scheme);
+                    await emailService.SendAsync("noreply@identitymanager.com", user.Email,
+                    "Confirm Email - Identity Manager",
+                    $"Please click this link confirm your email: <a href='{callbackUrl}'>Link</a>");
+
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
@@ -54,6 +60,26 @@ namespace IdentityManager.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string code, string userId)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User does not exist");
+                    return View();
+                }
+                var result = await userManager.ConfirmEmailAsync(user, code);
+                if (result.Succeeded)
+                {
+                    return View();
+                }
+            }
+            return View("Error");
         }
 
         public IActionResult Login(string returnUrl = null)
@@ -123,9 +149,9 @@ namespace IdentityManager.Controllers
             else
             {
                 var code = await userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { user = user.Id, code }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code }, protocol: HttpContext.Request.Scheme);
 
-                await emailService.SendAsync("musyokaer@gmail.com", "musyokaer@gmail.com",
+                await emailService.SendAsync("noreply@identitymanager.com", user.Email,
                     "Please reset - Identity Manager",
                     $"Please click this link to reset yout password: <a href='{callbackUrl}'>Link</a>");
                 return RedirectToAction("ForgotPasswordConfirmation");
