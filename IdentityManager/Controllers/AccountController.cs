@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IdentityManager.Controllers
 {
@@ -197,6 +198,17 @@ namespace IdentityManager.Controllers
         public IActionResult ForgotPasswordConfirmation()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> EnableAuthenticator()
+        {
+            var user = await userManager.GetUserAsync(User);
+            await userManager.ResetAuthenticatorKeyAsync(user);
+            var token = await userManager.GetAuthenticatorKeyAsync(user);
+            var model = new TwoFactorAuthenticationViewModel() { Token = token };
+            return View(model);
         }
 
         private void AddErrors(IdentityResult result)
