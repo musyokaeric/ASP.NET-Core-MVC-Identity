@@ -266,6 +266,16 @@ namespace IdentityManager.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> RemoveAuthenticator()
+        {
+            var user = await userManager.GetUserAsync(User);
+            await userManager.ResetAuthenticatorKeyAsync(user);
+            await userManager.SetTwoFactorEnabledAsync(user, false);
+            return RedirectToAction(nameof(Index), "Home");
+        }
+
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]

@@ -3,16 +3,22 @@
 
 @{
     ViewData["Title"] = "Home Page";
-    var user = await UserManager.GetUserAsync(User);
-    var hasTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 
-    @if (User.Identity.IsAuthenticated && !hasTwoFactorEnabled)
+    @if (User.Identity.IsAuthenticated)
     {
-        <a asp-controller="Account" asp-action="EnableAuthenticator">Setup two factor authentication</a>
+        var twoFactor = ViewData["TwoFactorEnabled"];
+        if (twoFactor != null && twoFactor.ToString().ToLower() == "true")
+        {
+            <a asp-controller="Account" asp-action="RemoveAuthenticator" class="btn btn-warning">Reset & Remove two factor authentication</a>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="EnableAuthenticator">Setup two factor authentication</a>
+        }
     }
     </br>
     </br>
