@@ -6,10 +6,11 @@
 
 <form method="post">
 
-    @if (Model != null && !string.IsNullOrEmpty(Model.Id))
+    @if (Model != null && !string.IsNullOrEmpty(Model.NormalizedName))
     {
         title = "Edit Role";
         <input asp-for="@Model.Id" hidden />
+        <input asp-for="@Model.NormalizedName" hidden />
     }
     <br />
     <div class="card shadow border-0 mt-4">
@@ -24,7 +25,7 @@
         <div class="card-body p-4">
             <div class="border p-2 rounded">
 
-                @if (Model != null && !string.IsNullOrEmpty(Model.Id))
+                @if (Model != null && !string.IsNullOrEmpty(Model.NormalizedName))
                 {
                     <div class="form-group">
                         <label asp-for="Id" class="col-12"></label>
