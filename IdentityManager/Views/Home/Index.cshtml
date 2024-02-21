@@ -1,11 +1,16 @@
-﻿@{
+﻿@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
     ViewData["Title"] = "Home Page";
+    var user = await UserManager.GetUserAsync(User);
+    var hasTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
 
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated && !hasTwoFactorEnabled)
     {
         <a asp-controller="Account" asp-action="EnableAuthenticator">Setup two factor authentication</a>
     }

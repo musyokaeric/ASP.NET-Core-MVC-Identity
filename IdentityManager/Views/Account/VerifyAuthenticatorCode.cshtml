@@ -1,12 +1,12 @@
-﻿@model TwoFactorAuthenticationViewModel
+﻿@model VerifyAuthenticatorViewModel
 
 <div class="row col-md-10 offset-md-1">
-    <h1 class="text-primary text-center pt-2">Enable Authenticator Code</h1>
+    <h1 class="text-primary text-center pt-2">Verify Authenticator Code</h1>
 
-    <form method="post">
+    <form method="post" asp-asp-controller="Account" asp-action="VerifyAuthenticatorCode" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+        <input asp-for="RememberMe" type="hidden" />
+
         <div class="border p-2 rounded">
-            <p class="text-center">Please enter the code below with your authenticator app.</p>
-            <p class="text-center">@Model.Token</p>
             <div asp-validation-summary="All" class="text-danger"></div>
 
             <div class="form-group">
