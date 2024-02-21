@@ -207,6 +207,12 @@ namespace IdentityManager.Controllers
         }
 
         [HttpGet]
+        public IActionResult NoAccess()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public IActionResult ForgotPassword()
         {
             return View();

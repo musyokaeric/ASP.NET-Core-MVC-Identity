@@ -27,7 +27,7 @@ namespace IdentityManager.Controllers
             return View();
         }
 
-        [Authorize]
+        [Authorize(Roles = SD.Admin)]
         public IActionResult Privacy()
         {
             return View();

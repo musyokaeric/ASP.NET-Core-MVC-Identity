@@ -37,6 +37,12 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SMTP"));
 builder.Services.AddSingleton<IEmailService, EmailService>();
 
+// Configure application cookie
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = new PathString("/Account/NoAccess");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
