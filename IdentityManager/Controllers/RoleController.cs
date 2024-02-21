@@ -18,5 +18,21 @@ namespace IdentityManager.Controllers
 
             return View(roles);
         }
+
+        [HttpGet]
+        public IActionResult Upsert(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId))
+            {
+                // Create
+                return View();
+            }
+            else
+            {
+                // Update
+                var role = context.Roles.FirstOrDefault(x => x.Id == roleId);
+                return View(role);
+            }
+        }
     }
 }
