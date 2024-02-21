@@ -24,7 +24,7 @@ namespace IdentityManager.Models.ViewModels
         [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match")]
         public string ConfirmPassword { get; set; }
 
-        public IEnumerable<SelectListItem> RoleList { get; set; }
+        public IEnumerable<SelectListItem>? RoleList { get; set; }
         [Display(Name = "Role")]
         public string RoleSelected { get; set; }
     }
