@@ -1,6 +1,7 @@
 ﻿using IdentityManager.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace IdentityManager.Controllers
 {
@@ -58,6 +59,18 @@ namespace IdentityManager.Controllers
                 roleFromDb.Name = role.Name;
                 roleFromDb.NormalizedName = role.Name.ToUpper();
                 var result = await roleManager.UpdateAsync(roleFromDb);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string roleId)
+        {
+            var role = context.Roles.FirstOrDefault(x => x.Id == roleId);
+            if (role != null)
+            {
+                await roleManager.DeleteAsync(role);
             }
             return RedirectToAction(nameof(Index));
         }
