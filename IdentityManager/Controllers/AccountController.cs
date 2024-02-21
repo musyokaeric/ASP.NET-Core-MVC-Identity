@@ -16,17 +16,25 @@ namespace IdentityManager.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly IEmailService emailService;
         private readonly UrlEncoder urlEncoder;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService, UrlEncoder urlEncoder)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailService emailService, UrlEncoder urlEncoder,
+            RoleManager<IdentityRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.emailService = emailService;
             this.urlEncoder = urlEncoder;
+            this.roleManager = roleManager;
         }
 
-        public IActionResult Register(string returnUrl = null)
+        public async Task<IActionResult> Register(string returnUrl = null)
         {
+            if (!roleManager.RoleExistsAsync(SD.Admin).GetAwaiter().GetResult())
+            {
+                await roleManager.CreateAsync(new IdentityRole(SD.Admin));
+                await roleManager.CreateAsync(new IdentityRole(SD.User));
+            }
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -52,9 +60,9 @@ namespace IdentityManager.Controllers
                 {
                     var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userid = user.Id, code }, protocol: HttpContext.Request.Scheme);
-                    await emailService.SendAsync("noreply@identitymanager.com", user.Email,
-                    "Confirm Email - Identity Manager",
-                    $"Please click this link confirm your email: <a href='{callbackUrl}'>Link</a>");
+                    //await emailService.SendAsync("noreply@identitymanager.com", user.Email,
+                    //"Confirm Email - Identity Manager",
+                    //$"Please click this link confirm your email: <a href='{callbackUrl}'>Link</a>");
 
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
