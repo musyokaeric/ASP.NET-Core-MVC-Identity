@@ -72,6 +72,13 @@ namespace IdentityManager.Controllers
             var role = context.Roles.FirstOrDefault(x => x.Id == roleId);
             if (role != null)
             {
+                var userRoles = context.UserRoles.Where(u => u.RoleId == roleId).Count();
+                if (userRoles > 0)
+                {
+                    TempData[SD.Error] = "Cannot delete this role, since there are users assigned to this role.";
+                    return RedirectToAction(nameof(Index));
+                }
+
                 await roleManager.DeleteAsync(role);
                 TempData[SD.Success] = "Role deleted successfully";
             }
