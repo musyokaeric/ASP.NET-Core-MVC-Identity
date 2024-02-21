@@ -7,6 +7,7 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace IdentityManager.Controllers
 {
@@ -35,8 +36,17 @@ namespace IdentityManager.Controllers
                 await roleManager.CreateAsync(new IdentityRole(SD.Admin));
                 await roleManager.CreateAsync(new IdentityRole(SD.User));
             }
+
+            List<SelectListItem> listItems = new();
+            foreach (var role in roleManager.Roles)
+                listItems.Add(new SelectListItem { Value = role.Name, Text = role.Name });
+
             ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            RegisterViewModel model = new()
+            {
+                RoleList = listItems
+            };
+            return View(model);
         }
 
         [HttpPost]
