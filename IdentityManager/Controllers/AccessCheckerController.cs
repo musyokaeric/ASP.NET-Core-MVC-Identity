@@ -20,12 +20,14 @@ namespace IdentityManager.Controllers
         }
 
         // If an account has "user" or "admin" role, they can access this endpoint
+        [Authorize(Roles = $"{SD.Admin},{SD.User}")]
         public IActionResult UserOrAdminRole_Access()
         {
             return View();
         }
 
         // If an account has "admin" role, they can access this endpoint
+        [Authorize(Roles = SD.Admin)]
         public IActionResult AdminRole_Access()
         {
             return View();
