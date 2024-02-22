@@ -121,5 +121,20 @@ namespace IdentityManager.Controllers
             await context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var user = context.ApplicationUser.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            context.ApplicationUser.Remove(user);
+            await context.SaveChangesAsync();
+            TempData[SD.Success] = "User deleted successfully";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
