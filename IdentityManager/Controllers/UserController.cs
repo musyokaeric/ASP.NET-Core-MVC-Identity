@@ -95,6 +95,60 @@ namespace IdentityManager.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> ManageUserClaim(string userId)
+        {
+            ApplicationUser user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var existingUserClaims = await userManager.GetClaimsAsync(user);
+            var model = new ClaimsViewModel { User = user };
+
+            foreach (var claim in ClaimStore.claimsList)
+            {
+                ClaimSelection claimSelection = new ClaimSelection { ClaimType = claim.Type };
+                if (existingUserClaims.Any(c => c.Type == claim.Type))
+                {
+                    claimSelection.IsSelected = true;
+                }
+                model.ClaimList.Add(claimSelection);
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ManageUserClaim(ClaimsViewModel claimsViewModel)
+        {
+            ApplicationUser user = await userManager.FindByIdAsync(claimsViewModel.User.Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var oldUserClaims = await userManager.GetClaimsAsync(user);
+            var result = await userManager.RemoveClaimsAsync(user, oldUserClaims);
+            if (!result.Succeeded)
+            {
+                TempData[SD.Error] = "Error while removing claims";
+                return View(claimsViewModel);
+            }
+
+            result = await userManager.AddClaimsAsync(user, claimsViewModel.ClaimList
+                .Where(c => c.IsSelected)
+                .Select(c => new System.Security.Claims.Claim(c.ClaimType, c.IsSelected.ToString())));
+            if (!result.Succeeded)
+            {
+                TempData[SD.Error] = "Error while adding claims";
+                return View(claimsViewModel);
+            }
+
+            TempData[SD.Success] = "Claims added successfully";
+            return RedirectToAction(nameof(Index));
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LockUnlock(string userId)
