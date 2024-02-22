@@ -19,23 +19,14 @@ namespace IdentityManager.Controllers
             this.roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var users = context.ApplicationUser.ToList();
-            var userRoles = context.UserRoles.ToList();
-            var roles = context.Roles.ToList();
 
             foreach (var user in users)
             {
-                var userRole = userRoles.FirstOrDefault(u => u.UserId == user.Id);
-                if (userRole == null)
-                {
-                    user.Role = "none";
-                }
-                else
-                {
-                    user.Role = roles.FirstOrDefault(r => r.Id == userRole.RoleId).Name;
-                }
+                var userRoles = await userManager.GetRolesAsync(user) as List<string>;
+                user.Role = string.Join(", ", userRoles);
             }
 
             return View(users);

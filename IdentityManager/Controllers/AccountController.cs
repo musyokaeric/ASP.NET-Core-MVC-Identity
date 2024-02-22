@@ -68,8 +68,7 @@ namespace IdentityManager.Controllers
                 var result = await userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    if(model.RoleSelected != null && model.RoleSelected.Length > 0 && model.RoleSelected == SD.Admin)
-                        await userManager.AddToRoleAsync(user, SD.Admin);
+                    if (model.RoleSelected != null) await userManager.AddToRoleAsync(user, model.RoleSelected);
                     else await userManager.AddToRoleAsync(user, SD.User);
 
                     var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
