@@ -32,6 +32,22 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Roles</a>
                         </li>
+
+                        @* Access Checker Links *@
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Access Checker
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="All_Access">All Access</a></li>
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="Authorized_Access">Authorized Access</a></li>
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="AdminRole_Access">Admin Role Access</a></li>
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="UserOrAdminRole_Access"> User OR Admin Role Access</a></li>
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="Admin_Create_Access">Admin Role - Create Claim Access</a></li>
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="Admin_CreateEditDelete_Access">Admin Role - Create & Edit & Delete Claim Access</a></li>
+                                <li><a class="dropdown-item" asp-controller="AccessChecker" asp-action="OnlyEric_Access">Only Eric</a></li>
+                            </ul>
+                        </li>
                     </ul>
 
                     @* Login Partial Custom View *@
