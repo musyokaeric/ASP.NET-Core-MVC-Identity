@@ -41,6 +41,7 @@ namespace IdentityManager.Controllers
         }
 
         // If an account has "admin" role and "create" claim, they can access this endpoint
+        [Authorize(Policy = "AdminRole_CreateClaim")]
         public IActionResult Admin_Create_Access()
         {
             return View();

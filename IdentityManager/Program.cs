@@ -37,6 +37,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminANDUser", policy => policy.RequireRole(SD.Admin).RequireRole(SD.User));
+    options.AddPolicy("AdminRole_CreateClaim", policy => policy.RequireRole(SD.Admin).RequireClaim("create", "True"));
 });
 
 
