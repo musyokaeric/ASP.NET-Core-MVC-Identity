@@ -1,17 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityManager.Controllers
 {
+    [Authorize]
     public class AccessCheckerController : Controller
     {
         // Anyone can access this endpoint
+        [AllowAnonymous]
         public IActionResult All_Access()
         {
             return View();
         }
 
         // As long as they are logged in, they can access this endpoint.
-
         public IActionResult Authorized_Access()
         {
             return View();
