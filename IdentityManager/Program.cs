@@ -1,3 +1,4 @@
+using IdentityManager;
 using IdentityManager.Data;
 using IdentityManager.Models;
 using IdentityManager.Services;
@@ -30,6 +31,12 @@ builder.Services.Configure<IdentityOptions>(options =>
     // Lockout
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+});
+
+// Policy based Authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminANDUser", policy => policy.RequireRole(SD.Admin).RequireRole(SD.User));
 });
 
 
