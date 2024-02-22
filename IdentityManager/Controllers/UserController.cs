@@ -63,5 +63,36 @@ namespace IdentityManager.Controllers
             }
             return View(model);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ManageRole(RolesViewModel rolesViewModel)
+        {
+            ApplicationUser user = await userManager.FindByIdAsync(rolesViewModel.User.Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var oldUserRoles = await userManager.GetRolesAsync(user);
+            var result = await userManager.RemoveFromRolesAsync(user, oldUserRoles);
+            if (!result.Succeeded)
+            {
+                TempData[SD.Error] = "Error while removing roles";
+                return View(rolesViewModel);
+            }
+
+            var stringRoles = rolesViewModel.RolesList.Where(r => r.IsSelected).Select(r => r.RoleName);
+
+            result = await userManager.AddToRolesAsync(user, rolesViewModel.RolesList.Where(r => r.IsSelected).Select(r => r.RoleName));
+            if (!result.Succeeded)
+            {
+                TempData[SD.Error] = "Error while adding roles";
+                return View(rolesViewModel);
+            }
+
+            TempData[SD.Success] = "Roles added successfully";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
