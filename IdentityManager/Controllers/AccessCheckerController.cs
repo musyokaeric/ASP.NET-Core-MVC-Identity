@@ -48,6 +48,7 @@ namespace IdentityManager.Controllers
         }
 
         // If an account has "admin" role, and ("create" & "edit" & "delete") claims, they can access this endpoint
+        [Authorize(Policy = "AdminRole_CreateEditDeleteClaim")]
         public IActionResult Admin_CreateEditDelete_Access()
         {
             return View();

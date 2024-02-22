@@ -38,6 +38,11 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminANDUser", policy => policy.RequireRole(SD.Admin).RequireRole(SD.User));
     options.AddPolicy("AdminRole_CreateClaim", policy => policy.RequireRole(SD.Admin).RequireClaim("create", "True"));
+    options.AddPolicy("AdminRole_CreateEditDeleteClaim", policy => policy
+    .RequireRole(SD.Admin)
+    .RequireClaim("create", "True")
+    .RequireClaim("edit", "True")
+    .RequireClaim("delete", "True"));
 });
 
 
