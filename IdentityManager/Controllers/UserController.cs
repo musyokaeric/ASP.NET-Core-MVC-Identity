@@ -94,5 +94,32 @@ namespace IdentityManager.Controllers
             TempData[SD.Success] = "Roles added successfully";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LockUnlock(string userId)
+        {
+            ApplicationUser user = context.ApplicationUser.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+            {
+                // User is locked and will remain locked until lockout end time
+                // Clicking this action will unlock the user
+                user.LockoutEnd = DateTime.Now;
+                TempData[SD.Success] = "User unlocked successfully";
+            }
+            else
+            {
+                // User is not locked, clicking this action will lock the user
+                user.LockoutEnd = DateTime.Now.AddYears(1000);
+                TempData[SD.Success] = "User locked successfully";
+            }
+            
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
