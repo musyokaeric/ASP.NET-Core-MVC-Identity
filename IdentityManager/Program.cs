@@ -43,6 +43,17 @@ builder.Services.AddAuthorization(options =>
     .RequireClaim("create", "True")
     .RequireClaim("edit", "True")
     .RequireClaim("delete", "True"));
+
+    // Conditional Role & Claim Access (Func Type with policy based authorization)
+    options.AddPolicy("AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole", policy => policy.RequireAssertion(context =>
+    (
+        context.User.IsInRole(SD.Admin) &&
+        context.User.HasClaim(c => c.Type == "Create" && c.Value == "True") &&
+        context.User.HasClaim(c => c.Type == "Edit" && c.Value == "True") &&
+        context.User.HasClaim(c => c.Type == "Delete" && c.Value == "True")
+    )
+        || context.User.IsInRole(SD.SuperAdmin)
+    ));
 });
 
 

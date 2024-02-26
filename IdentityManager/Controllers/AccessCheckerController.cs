@@ -54,6 +54,13 @@ namespace IdentityManager.Controllers
             return View();
         }
 
+        // If an account has "admin" role, and ("create" & "edit" & "delete") claims OR has "superadmin" role, they can access this endpoint
+        [Authorize(Policy = "AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole")]
+        public IActionResult Admin_CreateEditDelete_Or_SuperAdminRole_Access()
+        {
+            return View();
+        }
+
         // Only Eric can access this endpoint
         public IActionResult OnlyEric_Access()
         {
