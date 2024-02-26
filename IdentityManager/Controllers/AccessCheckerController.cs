@@ -67,5 +67,12 @@ namespace IdentityManager.Controllers
         {
             return View();
         }
+
+        // Custom policy handler with claims
+        [Authorize(Policy = "FirstNameAuthorization")]
+        public IActionResult FirstNameAuthorization_Access()
+        {
+            return View();
+        }
     }
 }

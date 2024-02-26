@@ -8,6 +8,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace IdentityManager.Controllers
 {
@@ -172,6 +173,14 @@ namespace IdentityManager.Controllers
                 var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
+                    var user = await userManager.GetUserAsync(User);
+                    var claim = await userManager.GetClaimsAsync(user);
+                    if (claim.Count > 0 && claim.FirstOrDefault(c => c.Type == "FirstName") != null)
+                    {
+                        await userManager.RemoveClaimAsync(user, claim.FirstOrDefault(c => c.Type == "FirstName"));
+                    }
+                    await userManager.AddClaimAsync(user, new Claim("FirstName", user.Name));
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
