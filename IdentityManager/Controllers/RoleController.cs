@@ -1,4 +1,5 @@
 ﻿using IdentityManager.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -67,6 +68,8 @@ namespace IdentityManager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        // [Authorize(Roles = SD.SuperAdmin)] // Simple handler: Only a super admin can delete a role
+        [Authorize(Policy = "OnlySuperAdminRoleChecker")]
         public async Task<IActionResult> Delete(string roleId)
         {
             var role = context.Roles.FirstOrDefault(x => x.Id == roleId);
@@ -81,6 +84,10 @@ namespace IdentityManager.Controllers
 
                 await roleManager.DeleteAsync(role);
                 TempData[SD.Success] = "Role deleted successfully";
+            }
+            else
+            {
+                TempData[SD.Error] = "Role not found";
             }
             return RedirectToAction(nameof(Index));
         }

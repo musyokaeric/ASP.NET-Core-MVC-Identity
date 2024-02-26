@@ -1,4 +1,5 @@
 using IdentityManager;
+using IdentityManager.Authorize;
 using IdentityManager.Data;
 using IdentityManager.Models;
 using IdentityManager.Services;
@@ -47,6 +48,9 @@ builder.Services.AddAuthorization(options =>
 
     // Conditional Role & Claim Access (Func Type with policy based authorization)
     options.AddPolicy("AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole", policy => policy.RequireAssertion(context => AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole(context)));
+
+    // Custom Authorization Requirement Handler with Roles
+    options.AddPolicy("OnlySuperAdminRoleChecker", policy => policy.Requirements.Add(new OnlySuperAdminRoleChecker()));
 });
 
 
