@@ -21,6 +21,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>() // Links with our database connection
     .AddDefaultTokenProviders(); // Token generation
 
+// NumberOfDaysForAccount Service
+builder.Services.AddScoped<INumberOfDaysForAccount, NumberOfDaysForAccount>();
+
+// Authorization handler service
+builder.Services.AddScoped<IAuthorizationHandler, AdminWithMoreThan1000DaysHandler>();
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -51,6 +57,7 @@ builder.Services.AddAuthorization(options =>
 
     // Custom Authorization Requirement Handler with Roles
     options.AddPolicy("OnlySuperAdminRoleChecker", policy => policy.Requirements.Add(new OnlySuperAdminRoleChecker()));
+    options.AddPolicy("AdminWithMoreThan1000Days", policy => policy.Requirements.Add(new AdminWithMoreThan1000DaysRequirement(1000)));
 });
 
 

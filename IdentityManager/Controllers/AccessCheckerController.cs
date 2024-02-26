@@ -61,7 +61,8 @@ namespace IdentityManager.Controllers
             return View();
         }
 
-        // Only Eric can access this endpoint
+        // Only Eric (Admin Role, and user is more than 1000 days old) can access this endpoint
+        [Authorize(Policy = "AdminWithMoreThan1000Days")]
         public IActionResult OnlyEric_Access()
         {
             return View();
