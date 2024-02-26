@@ -73,6 +73,13 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = new PathString("/Account/NoAccess");
 });
 
+// Microsoft Entra (Authentication) Setup
+builder.Services.AddAuthentication().AddMicrosoftAccount(options =>
+{
+    options.ClientId = "6f36e90a-628b-444a-868d-3fce898e4af7";
+    options.ClientSecret = "h-B8Q~ipCRu25sH_6yFbr1pXpjxOtOzYTkLJOaeZ";
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
