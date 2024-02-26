@@ -3,6 +3,7 @@ using IdentityManager.Data;
 using IdentityManager.Models;
 using IdentityManager.Services;
 using IdentityManager.Settings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,15 +46,7 @@ builder.Services.AddAuthorization(options =>
     .RequireClaim("delete", "True"));
 
     // Conditional Role & Claim Access (Func Type with policy based authorization)
-    options.AddPolicy("AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole", policy => policy.RequireAssertion(context =>
-    (
-        context.User.IsInRole(SD.Admin) &&
-        context.User.HasClaim(c => c.Type == "Create" && c.Value == "True") &&
-        context.User.HasClaim(c => c.Type == "Edit" && c.Value == "True") &&
-        context.User.HasClaim(c => c.Type == "Delete" && c.Value == "True")
-    )
-        || context.User.IsInRole(SD.SuperAdmin)
-    ));
+    options.AddPolicy("AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole", policy => policy.RequireAssertion(context => AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole(context)));
 });
 
 
@@ -90,3 +83,14 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+bool AdminRole_CreateEditDeleteClaim_OR_SuperAdminRole(AuthorizationHandlerContext context)
+{
+    return (
+        context.User.IsInRole(SD.Admin) &&
+        context.User.HasClaim(c => c.Type == "Create" && c.Value == "True") &&
+        context.User.HasClaim(c => c.Type == "Edit" && c.Value == "True") &&
+        context.User.HasClaim(c => c.Type == "Delete" && c.Value == "True")
+    )   
+    || context.User.IsInRole(SD.SuperAdmin);
+}
